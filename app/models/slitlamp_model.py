@@ -82,9 +82,6 @@ preprocess = transforms.Compose([
 # Prediction function
 # -------------------------
 def predict_slitlamp(image_array):
-    """
-    image_array: numpy array (H, W, 3) OR (1, H, W, 3) from preprocess_image
-    """
 
     if slitlamp_model is None:
         raise RuntimeError("Slit-lamp model is not loaded")

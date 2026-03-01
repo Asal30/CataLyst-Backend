@@ -43,9 +43,9 @@ class ConceptModel(nn.Module):
 # Load model
 # -------------------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "concept_slitlamp_final.hdf5")
-
-slitlamp_model = ConceptModel().to(DEVICE)
+MODEL_PATH = os.path.join(BASE_DIR, "models", "concept_slitlamp.pt")
+slitlamp_model = torch.jit.load(MODEL_PATH, map_location=DEVICE)
+slitlamp_model.eval()
 
 try:
     state_dict = torch.load(MODEL_PATH, map_location=DEVICE)
@@ -91,7 +91,10 @@ def predict_slitlamp(image_array):
         image_array = image_array[0]
     
     # Convert 0-1 float back to uint8 for PIL
-    image_uint8 = (image_array * 255).astype(np.uint8)
+    if image_array.max() <= 1.0:
+        image_uint8 = (image_array * 255).astype(np.uint8)
+    else:
+        image_uint8 = image_array.astype(np.uint8)
     img = Image.fromarray(image_uint8).convert("RGB")
     tensor = preprocess(img).unsqueeze(0).to(DEVICE)
 

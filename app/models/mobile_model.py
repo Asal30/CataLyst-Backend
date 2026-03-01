@@ -43,9 +43,9 @@ class ConceptModel(nn.Module):
 # Load model
 # -------------------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "concept_mobile_final.hdf5")
-
-mobile_model = ConceptModel().to(DEVICE)
+MODEL_PATH = os.path.join(BASE_DIR, "models", "concept_mobile.pt")
+mobile_model = torch.jit.load(MODEL_PATH, map_location=DEVICE)
+mobile_model.eval()
 
 try:
     if os.path.exists(MODEL_PATH):
@@ -111,7 +111,11 @@ def predict_mobile(image_array):
     
     # Convert 0-1 float back to uint8 for PIL
     print("Converting to uint8...")
-    image_uint8 = (image_array * 255).astype(np.uint8)
+    if image_array.max() <= 1.0:
+        image_uint8 = (image_array * 255).astype(np.uint8)
+    else:
+        image_uint8 = image_array.astype(np.uint8)
+    # image_uint8 = (image_array * 255).astype(np.uint8)
     print(f"uint8 min/max: {image_uint8.min()}/{image_uint8.max()}")
     
     print("Creating PIL image...")

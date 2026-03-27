@@ -32,6 +32,7 @@ The API will be available at `http://localhost:8000`
 docker run -p 8000:8000 \
   -v $(pwd)/uploads:/app/uploads \
   -v $(pwd)/outputs:/app/outputs \
+  -v $(pwd)/logs:/app/logs \
   catalyst-api:latest
 ```
 
@@ -74,6 +75,7 @@ docker service create --name catalyst-api \
   -p 8000:8000 \
   --mount type=volume,source=uploads,target=/app/uploads \
   --mount type=volume,source=outputs,target=/app/outputs \
+  --mount type=volume,source=logs,target=/app/logs \
   catalyst-api:latest
 ```
 
@@ -91,7 +93,8 @@ docker run -p 8000:8000 \
 
 The container uses volumes for:
 - `/app/uploads` - Uploaded images
-- `/app/outputs` - Generated outputs
+- `/app/outputs` - Generated outputs and Grad-CAM images
+- `/app/logs` - Prediction logs for evaluation
 
 Ensure these are either:
 - Mounted from host volumes

@@ -13,31 +13,22 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements first for better layer caching
 COPY requirements.txt .
 
-# Install PyTorch CPU-only first (much smaller ~200MB vs 915MB CUDA wheel)
+# Install PyTorch CPU-only first (matching requirements.txt versions)
 RUN pip install --no-cache-dir --timeout 120 \
-    torch==2.2.0+cpu torchvision==0.17.0+cpu torchaudio==2.2.0+cpu \
+    torch==2.10.0+cpu torchvision==0.25.0+cpu \
     --index-url https://download.pytorch.org/whl/cpu
 
-# Install remaining Python dependencies (skip torch packages already installed)
-RUN pip install --no-cache-dir --timeout 120 \
-    "numpy<2.0" \
-    fastapi==0.115.0 \
-    python-multipart==0.0.9 \
-    aiofiles==23.2.1 \
-    pillow \
-    scikit-learn \
-    scipy \
-    pandas \
-    matplotlib
+# Install all Python dependencies from requirements.txt
+RUN pip install --no-cache-dir --timeout 120 -r requirements.txt
 
-# Install production server
-RUN pip install --no-cache-dir gunicorn uvicorn[standard]
+# Install production server (gunicorn already included in requirements if needed)
+RUN pip install --no-cache-dir gunicorn
 
 # Copy application code
 COPY app/ ./app/
 
-# Create directories for uploads and outputs
-RUN mkdir -p uploads outputs
+# Create directories for uploads, outputs, and logs
+RUN mkdir -p uploads outputs logs
 
 # Expose port
 EXPOSE 8000

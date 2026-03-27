@@ -4,7 +4,7 @@ from app.services.preprocess import preprocess_image
 from app.services.model_selector import run_inference
 from app.services.gradcam import generate_gradcam
 
-def analyze_image(image_path, image_id, source="mobile"):
+def analyze_image(image_path, image_id, source="cbm"):
     start_time = time.time()
 
     # Preprocess

@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
 from fastapi.staticfiles import StaticFiles
+import os
 import time
 
 app = FastAPI(
@@ -10,7 +11,7 @@ app = FastAPI(
     version="1.0"
 )
 
-# CORS middleware - MUST come before other middleware
+# CORS middleware — must come before other middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,18 +25,17 @@ app.add_middleware(
 async def log_requests(request: Request, call_next):
     print(f"\n{'='*60}")
     print(f"REQUEST: {request.method} {request.url}")
-    print(f"Headers: {request.headers}")
     print(f"{'='*60}\n")
-    
+
     start_time = time.time()
-    
+
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
-        print(f"Response status: {response.status_code} - Time: {process_time}s")
+        print(f"Response status: {response.status_code} - Time: {process_time:.3f}s")
         return response
     except Exception as e:
-        print(f"MIDDLEWARE CAUGHT ERROR: {type(e).__name__}: {str(e)}")
+        print(f"MIDDLEWARE ERROR: {type(e).__name__}: {str(e)}")
         import traceback
         traceback.print_exc()
         raise
@@ -43,9 +43,17 @@ async def log_requests(request: Request, call_next):
 # Register routes
 app.include_router(router)
 
-# Mount static files for outputs
+# Serve output heatmap/overlay images  →  GET /outputs/<filename>
+os.makedirs("outputs", exist_ok=True)
 app.mount("/outputs", StaticFiles(directory="outputs"), name="outputs")
+
+# Serve original uploaded images  →  GET /uploads/<filename>
+# Required so the frontend GradCamOverlay can fetch the base image.
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
 def root():
     return {"message": "CataLyst backend is running"}
+
+# Touch: helps uvicorn --reload refresh modules reliably on Windows (v2).

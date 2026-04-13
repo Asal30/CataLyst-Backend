@@ -1,6 +1,5 @@
 from app.models.cbm_loader import predict_cbm, cbm_model
 
-
 def run_inference(image_array, source: str = "cbm"):
     source = source.lower().strip()
 

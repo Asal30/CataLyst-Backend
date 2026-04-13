@@ -1,14 +1,17 @@
+version: '3.8'
+
 services:
   catalyst-api:
-    build: .
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: catalyst-api
     ports:
       - "8000:8000"
     volumes:
       - ./uploads:/app/uploads
       - ./outputs:/app/outputs
       - ./logs:/app/logs
-    environment:
-      - DEBUG=false
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -16,3 +19,22 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    environment:
+      - PYTHONPATH=/app
+
+  # Frontend service (uncomment and configure when frontend is ready)
+  # catalyst-frontend:
+  #   build:
+  #     context: ../CataLyst-Frontend
+  #     dockerfile: Dockerfile
+  #   container_name: catalyst-frontend
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     catalyst-api:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge

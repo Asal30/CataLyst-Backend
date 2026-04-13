@@ -1,8 +1,15 @@
+import os
+
+# Set OpenBLAS memory limits BEFORE any torch/numpy imports
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["GOTO_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
 from fastapi.staticfiles import StaticFiles
-import os
 import time
 
 app = FastAPI(

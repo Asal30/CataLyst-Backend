@@ -1,0 +1,35 @@
+version: '3.8'
+
+# Override file for development environment
+# This file is automatically merged with docker-compose.yml when running docker-compose
+
+services:
+  catalyst-api:
+    # Override for development
+    environment:
+      - PYTHONPATH=/app
+      - DEBUG=true
+    # Mount source code for hot reloading (if using development server)
+    volumes:
+      - ./app:/app/app:ro
+      - ./uploads:/app/uploads
+      - ./outputs:/app/outputs
+      - ./logs:/app/logs
+    # Override command for development (uncomment if you want to use uvicorn directly)
+    # command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # Development database (if needed in future)
+  # postgres:
+  #   image: postgres:13
+  #   container_name: catalyst-postgres
+  #   environment:
+  #     POSTGRES_DB: catalyst_dev
+  #     POSTGRES_USER: catalyst
+  #     POSTGRES_PASSWORD: catalyst123
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:

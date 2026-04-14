@@ -45,9 +45,19 @@ class ConceptBottleneckModel(nn.Module):
 
         return concepts, presence_logits
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CANDIDATE_MODEL_PATHS = [
+    os.path.join(BASE_DIR, "best_model.pth"),
+    os.path.join(os.path.dirname(BASE_DIR), "best_model.pth"),
+    os.path.join(os.path.dirname(BASE_DIR), "models", "best_model.pth"),
+]
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "best_model.pth")
+MODEL_PATH = next((p for p in CANDIDATE_MODEL_PATHS if os.path.exists(p)), None)
+if MODEL_PATH is None:
+    raise FileNotFoundError(f"Could not locate best_model.pth in expected locations: {CANDIDATE_MODEL_PATHS}")
+
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# MODEL_PATH = os.path.join(BASE_DIR, "models", "best_model.pth")
 
 preprocess = transforms.Compose([
     transforms.Resize((224, 224)),

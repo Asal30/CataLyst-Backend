@@ -212,7 +212,9 @@ def process_cbm_output(concepts_scaled, presence_score):
     severity_score = overall_severity["score"]
 
     # Main task = presence, but use severity as weak safety support
-    is_cataract = (presence_score >= PRESENCE_THRESHOLD) or (severity_score >= 2.0)
+    # is_cataract = (presence_score >= PRESENCE_THRESHOLD) or (severity_score >= 2.0)
+    is_cataract = presence_score >= PRESENCE_THRESHOLD
+    support_flag = severity_score >= 2.0
     presence_margin = round(abs(presence_score - PRESENCE_THRESHOLD), 3)
 
     explanation_list = generate_text_explanation(arr, presence_score, is_cataract)
@@ -220,14 +222,21 @@ def process_cbm_output(concepts_scaled, presence_score):
 
     NO, NC, CO, PSC = arr * 5.0
     prediction = "Cataract Detected" if is_cataract else "No Cataract Detected"
+    cataract_probability = round(presence_score, 6)
+    cataract_probability_percent = round(cataract_probability * 100.0, 1)
+    decision_confidence_percent = round(abs(presence_score - PRESENCE_THRESHOLD) / PRESENCE_THRESHOLD * 100.0, 1)
 
     return {
         "prediction": prediction,
         "is_cataract": bool(is_cataract),
 
+        "cataract_probability": round(presence_score, 6),
+        "cataract_probability_percent": round(presence_score * 100.0, 1),
+        "decision_confidence_percent": round(abs(presence_score - PRESENCE_THRESHOLD) * 200.0, 1),
         "presence_score": round(presence_score, 6),
         "presence_margin": presence_margin,
         "presence_threshold": PRESENCE_THRESHOLD,
+        "support_flag_from_concepts": bool(support_flag),
 
         "raw_concepts_scaled": {
             "NO": round(float(arr[0]), 4),
@@ -236,6 +245,7 @@ def process_cbm_output(concepts_scaled, presence_score):
             "PSC": round(float(arr[3]), 4),
         },
 
+
         "NO": round(float(NO), 2),
         "NC": round(float(NC), 2),
         "CO": round(float(CO), 2),
@@ -243,7 +253,9 @@ def process_cbm_output(concepts_scaled, presence_score):
         "concepts": concepts_analysis,
 
         "overall_score": overall_severity["score"],
+        "overall_severity_score": overall_severity["score"],
         "overall_severity": overall_severity["severity"],
+        "overall_severity_label": overall_severity["severity"],
         "severity_method": overall_severity["method"],
 
         "cataract_type": cataract_type["type"],

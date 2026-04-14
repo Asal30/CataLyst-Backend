@@ -34,6 +34,9 @@ def _build_predict_response(result: dict) -> dict:
         "prediction": {
             "label": result.get("prediction"),
             "is_cataract": result.get("is_cataract"),
+            "cataract_probability": result.get("cataract_probability"),
+            "cataract_probability_percent": result.get("cataract_probability_percent"),
+            "decision_confidence_percent": result.get("decision_confidence_percent"),
             "presence_score": result.get("presence_score"),
             "presence_margin": result.get("presence_margin"),
             "presence_threshold": result.get("presence_threshold"),
@@ -51,6 +54,8 @@ def _build_predict_response(result: dict) -> dict:
             "concept_confidences": result.get("concept_confidences"),
         },
         "interpretation": {
+            "overall_severity_score": result.get("overall_severity_score"),
+            "overall_severity_label": result.get("overall_severity_label"),
             "overall_score": result.get("overall_score"),
             "overall_severity": result.get("overall_severity"),
             "severity_method": result.get("severity_method"),

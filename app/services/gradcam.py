@@ -529,15 +529,23 @@ def _normalize_input_image(image_array: np.ndarray) -> np.ndarray:
     return arr
 
 
+# def _build_model_transform() -> T.Compose:
+#     return T.Compose([
+#         T.Resize(256),
+#         T.CenterCrop(224),
+#         T.ToTensor(),
+#         T.Normalize(
+#             mean=[0.485, 0.456, 0.406],
+#             std=[0.229, 0.224, 0.225],
+#         ),
+#     ])
+
 def _build_model_transform() -> T.Compose:
     return T.Compose([
-        T.Resize(256),
-        T.CenterCrop(224),
+        T.Resize((224, 224)),
         T.ToTensor(),
-        T.Normalize(
-            mean=[0.485, 0.456, 0.406],
-            std=[0.229, 0.224, 0.225],
-        ),
+        T.Normalize(mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225]),
     ])
 
 
@@ -778,6 +786,9 @@ def generate_cbm_concept_gradcams(image_array: np.ndarray, model: torch.nn.Modul
     pil_img = Image.fromarray(arr).convert("RGB")
     tensor = _build_model_transform()(pil_img).unsqueeze(0)
     out = model(tensor)
+    # device = next(model.parameters()).device
+    # tensor = _build_model_transform()(pil_img).unsqueeze(0).to(device)
+    # out = model(torch.tensor)
 
     if target_layer is None:
         target_layer = _get_target_layer(model)

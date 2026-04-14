@@ -19,10 +19,15 @@ def analyze_image(image_path, image_id, source="cbm"):
         "prediction": result.get("prediction"),
         "is_cataract": result.get("is_cataract"),
         "presence_score": result.get("presence_score"),
+        "cataract_probability": result.get("cataract_probability"),
+        "cataract_probability_percent": result.get("cataract_probability_percent"),
+        "decision_confidence_percent": result.get("decision_confidence_percent"),
         "presence_margin": result.get("presence_margin"),
 
         "overall_score": result.get("overall_score"),
+        "overall_severity_score": result.get("overall_severity_score"),
         "overall_severity": result.get("overall_severity"),
+        "overall_severity_label": result.get("overall_severity_label"),
 
         "cataract_type": result.get("cataract_type"),
         "primary_cataract_type": result.get("primary_cataract_type"),
